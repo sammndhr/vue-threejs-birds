@@ -76,7 +76,8 @@
 		},
 
 		mounted() {
-			if (this.canvasBgColor) this.bgColor = this.canvasBgColor
+			// black in binary is 0
+			if (this.canvasBgColor || this.canvasBgColor === 0) this.bgColor = this.canvasBgColor
 			this.BIRDS = Math.pow(Math.min(this.quantity, 200), 2) //My computer can't handle too many birdiez :(
 			this.BirdGeometry = this.createBirdGeometry()
 			this.init()
@@ -119,8 +120,8 @@
 			},
 
 			getNewColor(order) {
-				const color1 = !this.color1 ? 0x8bf329 : this.color1,
-					color2 = !this.color2 ? 0x298bf3 : this.color2,
+				const color1 = !this.color1 || this.color1 !== 0 ? 0x8bf329 : this.color1,
+					color2 = !this.color2 || this.color1 !== 0 ? 0x298bf3 : this.color2,
 					colorMode = this.colorMode[this.colorEffect],
 					c1 = new THREE.Color(color1),
 					c2 = new THREE.Color(color2),

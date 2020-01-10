@@ -8,10 +8,10 @@
 		"three": "^0.112.1"
 	},
 	"devDependencies": {
+		"@rollup/plugin-buble": "^0.21.0",
+		"@rollup/plugin-commonjs": "^11.0.1",
 		"rollup": "^1.29.0",
 		"rollup-plugin-babel": "^4.3.3",
-		"rollup-plugin-buble": "^0.19.8",
-		"rollup-plugin-commonjs": "^10.1.0",
 		"rollup-plugin-vue": "^5.1.5",
 		"vue-template-compiler": "^2.6.11"
 	},

@@ -1,5 +1,5 @@
-import buble from 'rollup-plugin-buble'
-import commonjs from 'rollup-plugin-commonjs'
+import buble from '@rollup/plugin-buble'
+import commonjs from '@rollup/plugin-commonjs'
 import vue from 'rollup-plugin-vue'
 
 export default {
