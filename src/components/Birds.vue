@@ -43,6 +43,7 @@
 
 		data() {
 			return {
+				animationReq: null,
 				BIRDS: 1,
 				bgColor: 0xffffff,
 				BirdGeometry: Object.create(null),
@@ -80,6 +81,10 @@
 			this.BirdGeometry = this.createBirdGeometry()
 			this.init()
 			this.animate()
+		},
+
+		beforeDestroy() {
+			this.destroy()
 		},
 
 		methods: {
@@ -337,8 +342,18 @@
 			},
 
 			animate() {
-				requestAnimationFrame(this.animate)
+				this.animationReq = requestAnimationFrame(this.animate)
 				this.render()
+			},
+
+			destroy() {
+				document.removeEventListener('mousemove', this.onDocumentMouseMove)
+				document.removeEventListener('touchstart', this.onDocumentTouchStart)
+				document.removeEventListener('touchmove', this.onDocumentTouchMove)
+				window.removeEventListener('resize', this.onWindowResize)
+				cancelAnimationFrame(this.animationReq)
+				this.renderer = null
+				this.scene = null
 			},
 
 			render() {
