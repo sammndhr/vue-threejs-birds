@@ -153,8 +153,8 @@
 				this.initComputeRenderer()
 
 				document.addEventListener('mousemove', this.onDocumentMouseMove, false)
-				document.addEventListener('touchstart', this.onDocumentTouchStart, false)
-				document.addEventListener('touchmove', this.onDocumentTouchMove, false)
+				document.addEventListener('touchstart', this.onDocumentTouchStart, true)
+				document.addEventListener('touchmove', this.onDocumentTouchMove, true)
 
 				this.updateControllerValues(this.effectController)
 				this.initBirds()
@@ -368,7 +368,6 @@
 					this.worldWidth = Math.max(window.innerWidth, this.minWidth)
 				}
 				if (rerender) {
-					console.log(window.innerWidth)
 					this.camera.aspect = this.worldWidth / this.worldHeight
 					this.camera.updateProjectionMatrix()
 					this.renderer.setSize(this.worldWidth, this.worldHeight)
@@ -403,8 +402,8 @@
 
 			destroy() {
 				document.removeEventListener('mousemove', this.onDocumentMouseMove)
-				document.removeEventListener('touchstart', this.onDocumentTouchStart)
-				document.removeEventListener('touchmove', this.onDocumentTouchMove)
+				document.removeEventListener('touchstart', this.onDocumentTouchStart, true)
+				document.removeEventListener('touchmove', this.onDocumentTouchMove, true)
 				cancelAnimationFrame(this.animationReq)
 				this.renderer = null
 				this.scene = null
