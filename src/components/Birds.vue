@@ -9,7 +9,7 @@
 	import '../utils/helpers.js'
 
 	export default {
-		name: 'ThreeTest',
+		name: 'VueThreejsBirds',
 		props: {
 			canvasBgColor: [String, Number],
 			color1: [String, Number],
@@ -130,6 +130,7 @@
 			this.BirdGeometry = this.createBirdGeometry()
 			this.init()
 			this.animate()
+			this.$root.$on('resized', this.onWindowResize)
 		},
 
 		beforeDestroy() {
@@ -154,7 +155,6 @@
 				document.addEventListener('mousemove', this.onDocumentMouseMove, false)
 				document.addEventListener('touchstart', this.onDocumentTouchStart, false)
 				document.addEventListener('touchmove', this.onDocumentTouchMove, false)
-				window.addEventListener('resize', this.onWindowResize, false)
 
 				this.updateControllerValues(this.effectController)
 				this.initBirds()
@@ -368,6 +368,7 @@
 					this.worldWidth = Math.max(window.innerWidth, this.minWidth)
 				}
 				if (rerender) {
+					console.log(window.innerWidth)
 					this.camera.aspect = this.worldWidth / this.worldHeight
 					this.camera.updateProjectionMatrix()
 					this.renderer.setSize(this.worldWidth, this.worldHeight)
@@ -404,7 +405,6 @@
 				document.removeEventListener('mousemove', this.onDocumentMouseMove)
 				document.removeEventListener('touchstart', this.onDocumentTouchStart)
 				document.removeEventListener('touchmove', this.onDocumentTouchMove)
-				window.removeEventListener('resize', this.onWindowResize)
 				cancelAnimationFrame(this.animationReq)
 				this.renderer = null
 				this.scene = null

@@ -33,6 +33,37 @@ Then import it into YourComponent.vue and use it like a normal vue component
 </script>
 ```
 
+### Emitting event to handle window resize
+
+Emit a custom event so the canvas can rerender on resize. Emitting a 'resized' event like this registers a single 'resize' event listener and you can add other logic to the event handler (other components can also have their own resize handlers). [More info on custom events.](https://vuejs.org/v2/guide/components-custom-events.html#Event-Names)
+
+```vue
+<template>
+  <vue-threejs-birds />
+</template>
+
+<script>
+  import VueThreejsBirds from './Birds'
+  export default {
+    components: {
+      VueThreejsBirds
+    },
+    methods: {
+      handleResize() {
+        this.$root.$emit('resized')
+        //do other stuff
+      }
+    },
+    mounted() {
+      window.addEventListener('resize', this.handleResize)
+    },
+    beforeDestroy() {
+      window.removeEventListener('resize', this.handleResize)
+    }
+  }
+</script>
+```
+
 ## Options
 
 Here is a list of all the props that can be customized
@@ -76,7 +107,7 @@ Canvas will default to 100% viewport width and 100% viewport height on mount and
 8. `fixedHeight`: Height will not change. If `minHeight > fixedHeight`, `fixedHeight` will set to `minHeight`
 9. `fixedWidth`: Width will not change. If `minWidth > fixedWidth`, `fixedWidth` will set to `minWidth`
 
-Here are all the props that can be passed with prop types. 
+Here are all the props that can be passed with prop types.
 
 ```vue
 <script>
