@@ -1,5 +1,5 @@
 <template>
-	<div ref="birdContainer" class="container"></div>
+	<div ref="birdContainer" :style="dimensionsObj" class="container"></div>
 </template>
 
 <script>
@@ -19,6 +19,7 @@
 				type: Number,
 				required: false
 			},
+
 			effectController: {
 				default: () => ({
 					separation: 20.0,
@@ -27,6 +28,26 @@
 					freedom: 0.75
 				}),
 				type: Object,
+				required: false
+			},
+			fixedHeight: {
+				type: Number,
+				default: null,
+				required: false
+			},
+			fixedWidth: {
+				type: Number,
+				default: null,
+				required: false
+			},
+			minHeight: {
+				type: Number,
+				default: null,
+				required: false
+			},
+			minWidth: {
+				type: Number,
+				default: null,
 				required: false
 			},
 			quantity: {
@@ -59,6 +80,7 @@
 					4: 'mix'
 				},
 				container: null,
+				dimensionsObj: {},
 				gpuCompute: null,
 				last: window.performance.now(),
 				mouseY: 0,
@@ -68,14 +90,40 @@
 				renderer: null,
 				scene: null,
 				WIDTH: 32,
-				windowHalfX: window.innerWidth / 2,
-				windowHalfY: window.innerHeight / 2,
+				worldWidth: window.innerWidth,
+				worldHeight: window.innerHeight,
 				velocityUniforms: {},
 				velocityVariable: {}
 			}
 		},
 
+		computed: {
+			windowHalfX: function() {
+				return this.worldWidth / 2
+			},
+			windowHalfY: function() {
+				return this.worldHeight / 2
+			}
+		},
+
 		mounted() {
+			if (this.fixedHeight !== null) {
+				this.worldHeight = this.fixedHeight
+			}
+			if (this.fixedWidth !== null) {
+				this.worldWidth = this.fixedWidth
+			}
+			const dimensions = {}
+			if (this.minHeight) {
+				dimensions.minHeight = this.minHeight + 'px'
+			}
+			if (this.minWidth) {
+				dimensions.minWidth = this.minWidth + 'px'
+			}
+			this.dimensionsObj = dimensions
+			this.worldHeight = Math.max(this.minHeight, this.worldHeight)
+			this.worldWidth = Math.max(this.minWidth, this.worldWidth)
+
 			// black in binary is 0
 			if (this.canvasBgColor || this.canvasBgColor === 0) this.bgColor = this.canvasBgColor
 			this.BIRDS = Math.pow(Math.min(this.quantity, 200), 2) //My computer can't handle too many birdiez :(
@@ -91,7 +139,7 @@
 		methods: {
 			init: function() {
 				this.container = this.$refs.birdContainer
-				this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000)
+				this.camera = new THREE.PerspectiveCamera(75, this.worldWidth / this.worldHeight, 1, 3000)
 				this.camera.position.z = 350
 				this.scene = new THREE.Scene()
 				this.scene.background = new THREE.Color(this.bgColor)
@@ -99,7 +147,7 @@
 				this.renderer = new THREE.WebGLRenderer()
 
 				this.renderer.setPixelRatio(window.devicePixelRatio)
-				this.renderer.setSize(window.innerWidth, window.innerHeight)
+				this.renderer.setSize(this.worldWidth, this.worldHeight)
 				this.container.appendChild(this.renderer.domElement)
 				this.initComputeRenderer()
 
@@ -312,13 +360,18 @@
 			},
 
 			onWindowResize() {
-				this.windowHalfX = window.innerWidth / 2
-				this.windowHalfY = window.innerHeight / 2
-
-				this.camera.aspect = window.innerWidth / window.innerHeight
-				this.camera.updateProjectionMatrix()
-
-				this.renderer.setSize(window.innerWidth, window.innerHeight)
+				const rerender = this.fixedHeight === null || this.fixedWidth === null
+				if (this.fixedHeight === null) {
+					this.worldHeight = Math.max(window.innerHeight, this.minHeight)
+				}
+				if (this.fixedWidth === null) {
+					this.worldWidth = Math.max(window.innerWidth, this.minWidth)
+				}
+				if (rerender) {
+					this.camera.aspect = this.worldWidth / this.worldHeight
+					this.camera.updateProjectionMatrix()
+					this.renderer.setSize(this.worldWidth, this.worldHeight)
+				}
 			},
 
 			onDocumentMouseMove(event) {

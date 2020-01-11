@@ -67,28 +67,69 @@ effectController: {
 
 6. `wingsSpan`: Wingspan of the birds. Eg `{ wingsSpan: 20 }`
 
-All options with examples:
+### Dimensions
+
+Canvas will default to 100% viewport width and 100% viewport height on mount and window resize.
+
+6. `minWidth`: Minimun width of the canvas.
+7. `minHeight`: Minimun height of the canvas.
+8. `fixedHeight`: Height will not change. If `minHeight > fixedHeight`, `fixedHeight` will set to `minHeight`
+9. `fixedWidth`: Width will not change. If `minWidth > fixedWidth`, `fixedWidth` will set to `minWidth`
+
+Here are all the props that can be passed with prop types. 
 
 ```vue
 <script>
-  import VueThreejsBirds from 'vue-threejs-birds'
-  export default {
-    data() {
-      return {
-        canvasBgColor: 0xffffff,
-        color1: 0xfff,
-        color2: 0x000000,
-        colorEffect: 1,
-        effectController: {
-          separation: 20.0,
-          alignment: 20.0,
-          cohesion: 20.0,
-          freedom: 0.75
-        },
-        quantity: 32,
-        wingsSpan: 20
-      }
+  props: {
+    canvasBgColor: [String, Number],
+    color1: [String, Number],
+    color2: [String, Number],
+    colorEffect: {
+      default: 0,
+      type: Number,
+      required: false
+    },
+
+    effectController: {
+      default: () => ({
+        separation: 20.0,
+        alignment: 20.0,
+        cohesion: 20.0,
+        freedom: 0.75
+      }),
+      type: Object,
+      required: false
+    },
+    fixedHeight: {
+      type: Number,
+      default: null,
+      required: false
+    },
+    fixedWidth: {
+      type: Number,
+      default: null,
+      required: false
+    },
+    minHeight: {
+      type: Number,
+      default: null,
+      required: false
+    },
+    minWidth: {
+      type: Number,
+      default: null,
+      required: false
+    },
+    quantity: {
+      default: 32,
+      type: Number,
+      required: false
+    },
+    wingsSpan: {
+      type: Number,
+      default: 20,
+      required: false
     }
-  }
+  },
 </script>
 ```
