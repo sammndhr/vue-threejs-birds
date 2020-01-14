@@ -9,6 +9,7 @@
 	import '../utils/helpers.js'
 
 	export default {
+		/* eslint-disable */
 		name: 'VueThreejsBirds',
 		props: {
 			canvasBgColor: [String, Number],
@@ -88,6 +89,9 @@
 				positionVariable: {},
 				positionUniforms: {},
 				renderer: null,
+				scrollDirChanged: false,
+				currScrollDir: { up: false, down: false },
+				scroll: 0,
 				scene: null,
 				WIDTH: 32,
 				worldWidth: window.innerWidth,
@@ -153,9 +157,10 @@
 				this.container.appendChild(this.renderer.domElement)
 				this.initComputeRenderer()
 
-				document.addEventListener('mousemove', this.onDocumentMouseMove, false)
-				document.addEventListener('touchstart', this.onDocumentTouchStart, true)
-				document.addEventListener('touchmove', this.onDocumentTouchMove, true)
+				document.addEventListener('mousemove', this.onDocumentMouseMove, { passive: false })
+				document.addEventListener('touchstart', this.onDocumentTouchStart, { passive: false })
+				document.addEventListener('touchmove', this.onDocumentTouchMove, { passive: false })
+				document.addEventListener('wheel', this.onDocumentScroll, { passive: false })
 
 				this.updateControllerValues(this.effectController)
 				this.initBirds()
@@ -227,8 +232,10 @@
 				for (let f = 0; f < this.BIRDS; f++) {
 					// Body
 					verts_push(0, -0, -20, 0, 4, -20, 0, 0, 30)
+
 					// Left Wing
 					verts_push(0, 0, -15, -this.wingsSpan, 0, 0, 0, 0, 15)
+
 					// Right Wing
 					verts_push(0, 0, 15, this.wingsSpan, 0, 0, 0, 0, -15)
 				}
@@ -387,7 +394,6 @@
 					this.mouseY = event.touches[0].pageY - this.windowHalfY
 				}
 			},
-
 			onDocumentTouchMove(event) {
 				if (event.touches.length === 1) {
 					event.preventDefault()
@@ -395,16 +401,54 @@
 					this.mouseY = event.touches[0].pageY - this.windowHalfY
 				}
 			},
+			checkScrollDirectionIsUp(event) {
+				if (event.wheelDelta) {
+					return event.wheelDelta > 0
+				}
+				return event.deltaY < 0
+			},
 
+			//trying to make birds move with scroll
+			onDocumentScroll(event) {
+				if (!this.currScrollDir.down && !this.currScrollDir.up) {
+					this.scrollDirChanged = true
+				}
+				if (this.checkScrollDirectionIsUp(event)) {
+					if (this.currScrollDir.up && !this.currScrollDir.down) {
+						this.scrollDirChanged = false
+					}
+					if (!this.currScrollDir.up && this.currScrollDir.down) {
+						this.scrollDirChanged = true
+					}
+					this.currScrollDir.down = false
+					this.currScrollDir.up = true
+					this.mouseX = 0
+					this.mouseY = this.windowHalfY / 2 - this.scroll
+				} else {
+					if (this.currScrollDir.down && !this.currScrollDir.up) {
+						this.scrollDirChanged = false
+						this.scroll += 5
+					}
+					if (!this.currScrollDir.down && this.currScrollDir.up) {
+						this.scrollDirChanged = true
+					}
+					if (this.scrollDirChanged || this.scroll > 50) this.scroll = 0
+					this.currScrollDir.down = true
+					this.currScrollDir.up = false
+					this.mouseX = 0
+					this.mouseY = -this.windowHalfY / 2 - this.scroll
+				}
+			},
 			animate() {
 				this.animationReq = requestAnimationFrame(this.animate)
 				this.render()
 			},
 
 			destroy() {
-				document.removeEventListener('mousemove', this.onDocumentMouseMove)
-				document.removeEventListener('touchstart', this.onDocumentTouchStart, true)
-				document.removeEventListener('touchmove', this.onDocumentTouchMove, true)
+				document.removeEventListener('mousemove', this.onDocumentMouseMove, { passive: false })
+				document.removeEventListener('touchstart', this.onDocumentTouchStart, { passive: false })
+				document.removeEventListener('touchmove', this.onDocumentTouchMove, { passive: false })
+				document.removeEventListener('wheel', this.onDocumentScroll, { passive: false })
 				cancelAnimationFrame(this.animationReq)
 				this.renderer = null
 				this.scene = null
@@ -428,8 +472,10 @@
 					(-0.5 * this.mouseY) / this.windowHalfY,
 					0
 				)
+
 				this.mouseX = 10000
 				this.mouseY = 10000
+
 				this.gpuCompute.compute()
 
 				this.birdUniforms['texturePosition'].value = this.gpuCompute.getCurrentRenderTarget(

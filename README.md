@@ -37,6 +37,8 @@ Then import it into YourComponent.vue and use it like a normal vue component
 
 Emit a custom event so the canvas can rerender on resize. Emitting a 'resized' event like this registers a single 'resize' event listener and you can add other logic to the event handler (other components can also have their own resize handlers). [More info on custom events.](https://vuejs.org/v2/guide/components-custom-events.html#Event-Names)
 
+> Todo: Extract other event handlers
+
 ```vue
 <template>
   <vue-threejs-birds />
