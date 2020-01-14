@@ -65,7 +65,7 @@
 		data() {
 			return {
 				animationReq: null,
-				BIRDS: 1,
+				BIRDS: 32 * 32,
 				bgColor: 0xffffff,
 				BirdGeometry: Object.create(null),
 				birdUniforms: null,
@@ -126,7 +126,8 @@
 
 			// black in binary is 0
 			if (this.canvasBgColor || this.canvasBgColor === 0) this.bgColor = this.canvasBgColor
-			this.BIRDS = Math.pow(Math.min(this.quantity, 200), 2) //My computer can't handle too many birdiez :(
+			this.WIDTH = Math.pow(2, Math.max(Math.min(Math.abs(this.quantity), 5), 1)) //My computer can't handle too many birdiez :(
+			this.BIRDS = this.WIDTH * this.WIDTH
 			this.BirdGeometry = this.createBirdGeometry()
 			this.init()
 			this.animate()

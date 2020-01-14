@@ -25,7 +25,7 @@ Then import it into YourComponent.vue and use it like a normal vue component
     },
     data() {
       return {
-        quantity: 32,
+        quantity: 2,
         canvasBgColor: 0x000000
       }
     }
@@ -94,7 +94,7 @@ effectController: {
 }
 ```
 
-5. `quantity` - The total number of birds will be quantity x 3. It's capped at 200. Eg `{ quantity: 32 }`
+5. `quantity` - Number between 1-5. Total birds will be 2<sup>quantity</sup> x 2<sup>quantity</sup>.
 
 6. `wingsSpan`: Wingspan of the birds. Eg `{ wingsSpan: 20 }`
 
