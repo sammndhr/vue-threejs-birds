@@ -43,5 +43,5 @@
 		"build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/vue-threejs-birds.min.js"
 	},
 	"unpkg": "dist/vue-threejs-birds.min.js",
-	"version": "0.4.0"
+	"version": "0.4.1"
 }
