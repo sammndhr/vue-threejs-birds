@@ -9,10 +9,11 @@
 	import '../utils/helpers.js'
 
 	export default {
-		/* eslint-disable */
 		name: 'VueThreejsBirds',
+
 		props: {
 			canvasBgColor: [String, Number],
+			canvasBgAlpha: { default: 1, type: Number, required: false },
 			color1: [String, Number],
 			color2: [String, Number],
 			colorEffect: {
@@ -20,7 +21,6 @@
 				type: Number,
 				required: false
 			},
-
 			effectController: {
 				default: () => ({
 					separation: 20.0,
@@ -67,6 +67,7 @@
 			return {
 				animationReq: null,
 				BIRDS: 32 * 32,
+				bgAlpha: 1,
 				bgColor: 0xffffff,
 				BirdGeometry: Object.create(null),
 				birdUniforms: null,
@@ -91,11 +92,10 @@
 				renderer: null,
 				scrollDirChanged: false,
 				currScrollDir: { up: false, down: false },
-				scroll: 0,
 				scene: null,
 				WIDTH: 32,
-				worldWidth: window.innerWidth,
-				worldHeight: window.innerHeight,
+				worldWidth: 1440,
+				worldHeight: 900,
 				velocityUniforms: {},
 				velocityVariable: {}
 			}
@@ -111,13 +111,19 @@
 		},
 
 		mounted() {
+			this.worldWidth = window.innerWidth
+			this.worldHeight = window.innerHeight
+
+			if (this.canvasBgAlpha || this.canvasBgAlpha === 0) this.bgAlpha = Math.max(Math.min(this.canvasBgAlpha, 1), 0)
 			if (this.fixedHeight !== null) {
 				this.worldHeight = this.fixedHeight
 			}
 			if (this.fixedWidth !== null) {
 				this.worldWidth = this.fixedWidth
 			}
+
 			const dimensions = {}
+
 			if (this.minHeight) {
 				dimensions.minHeight = this.minHeight + 'px'
 			}
@@ -148,13 +154,15 @@
 				this.camera = new THREE.PerspectiveCamera(75, this.worldWidth / this.worldHeight, 1, 3000)
 				this.camera.position.z = 350
 				this.scene = new THREE.Scene()
-				this.scene.background = new THREE.Color(this.bgColor)
 				this.scene.fog = new THREE.Fog(0xffffff, 100, 1000)
-				this.renderer = new THREE.WebGLRenderer()
+				this.renderer = new THREE.WebGLRenderer({
+					alpha: true
+				})
 
 				this.renderer.setPixelRatio(window.devicePixelRatio)
 				this.renderer.setSize(this.worldWidth, this.worldHeight)
 				this.container.appendChild(this.renderer.domElement)
+				this.renderer.setClearColor(this.bgColor, this.bgAlpha)
 				this.initComputeRenderer()
 
 				document.addEventListener('mousemove', this.onDocumentMouseMove, { passive: false })
@@ -375,7 +383,7 @@
 				if (this.fixedWidth === null) {
 					this.worldWidth = Math.max(window.innerWidth, this.minWidth)
 				}
-				if (rerender) {
+				if (rerender && this.renderer) {
 					this.camera.aspect = this.worldWidth / this.worldHeight
 					this.camera.updateProjectionMatrix()
 					this.renderer.setSize(this.worldWidth, this.worldHeight)
@@ -423,22 +431,21 @@
 					this.currScrollDir.down = false
 					this.currScrollDir.up = true
 					this.mouseX = 0
-					this.mouseY = this.windowHalfY / 2 - this.scroll
+					this.mouseY = this.windowHalfY / 3
 				} else {
 					if (this.currScrollDir.down && !this.currScrollDir.up) {
 						this.scrollDirChanged = false
-						this.scroll += 5
 					}
 					if (!this.currScrollDir.down && this.currScrollDir.up) {
 						this.scrollDirChanged = true
 					}
-					if (this.scrollDirChanged || this.scroll > 50) this.scroll = 0
 					this.currScrollDir.down = true
 					this.currScrollDir.up = false
 					this.mouseX = 0
-					this.mouseY = -this.windowHalfY / 2 - this.scroll
+					this.mouseY = -this.windowHalfY / 3
 				}
 			},
+
 			animate() {
 				this.animationReq = requestAnimationFrame(this.animate)
 				this.render()
