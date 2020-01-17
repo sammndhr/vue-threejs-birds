@@ -166,8 +166,8 @@
 				this.initComputeRenderer()
 
 				document.addEventListener('mousemove', this.onDocumentMouseMove, { passive: false })
-				document.addEventListener('touchstart', this.onDocumentTouchStart, { passive: false })
-				document.addEventListener('touchmove', this.onDocumentTouchMove, { passive: false })
+				document.addEventListener('touchstart', this.onDocumentTouchStart, { passive: true })
+				document.addEventListener('touchmove', this.onDocumentTouchMove, { passive: true })
 				document.addEventListener('wheel', this.onDocumentScroll, { passive: false })
 
 				this.updateControllerValues(this.effectController)
@@ -397,14 +397,15 @@
 
 			onDocumentTouchStart(event) {
 				if (event.touches.length === 1) {
-					event.preventDefault()
+					//won't work if passive is false
+					// event.preventDefault()
 					this.mouseX = event.touches[0].pageX - this.windowHalfX
 					this.mouseY = event.touches[0].pageY - this.windowHalfY
 				}
 			},
 			onDocumentTouchMove(event) {
 				if (event.touches.length === 1) {
-					event.preventDefault()
+					// event.preventDefault()
 					this.mouseX = event.touches[0].pageX - this.windowHalfX
 					this.mouseY = event.touches[0].pageY - this.windowHalfY
 				}
