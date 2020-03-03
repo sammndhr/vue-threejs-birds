@@ -1,9 +1,11 @@
 {
+  "name": "vue-threejs-birds",
+  "version": "0.6.3",
+  "description": "Threejs birds flocking animation refactored and converted to vue module",
   "author": {
     "name": "Mrinalini 'Sam' Manandhar",
     "email": "sam@mrinalini.dev"
   },
-  "description": "Threejs birds flocking animation refactored and converted to vue module",
   "dependencies": {
     "three": "^0.114.0"
   },
@@ -30,11 +32,13 @@
   "license": "MIT",
   "main": "dist/vue-threejs-birds.umd.js",
   "module": "dist/vue-threejs-birds.esm.js",
-  "name": "vue-threejs-birds",
-  "private": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/mrinalini-m/vue-threejs-birds"
+  },
+  "homepage": "https://github.com/mrinalini-m/vue-threejs-birds#readme",
+  "bugs": {
+    "url": "https://github.com/mrinalini-m/vue-threejs-birds/issues"
   },
   "scripts": {
     "build": "npm run build:umd & npm run build:es & npm run build:unpkg",
@@ -42,6 +46,5 @@
     "build:es": "rollup --config build/rollup.config.js --format es --file dist/vue-threejs-birds.esm.js",
     "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/vue-threejs-birds.min.js"
   },
-  "unpkg": "dist/vue-threejs-birds.min.js",
-  "version": "0.6.3"
+  "unpkg": "dist/vue-threejs-birds.min.js"
 }
