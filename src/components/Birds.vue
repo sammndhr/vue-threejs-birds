@@ -129,6 +129,7 @@
     },
 
     mounted() {
+      console.log(this.color1, this.color2)
       this.worldWidth = window.innerWidth
       this.worldHeight = window.innerHeight
 
@@ -219,8 +220,8 @@
 
       getNewColor(order) {
         const color1 =
-            !this.color1 || this.color1 !== 0 ? 0x8bf329 : this.color1,
-          color2 = !this.color2 || this.color1 !== 0 ? 0x298bf3 : this.color2,
+            !this.color1 && this.color1 !== 0 ? 0x8bf329 : this.color1,
+          color2 = !this.color2 && this.color1 !== 0 ? 0x298bf3 : this.color2,
           colorMode = this.colorMode[this.colorEffect],
           c1 = new Color(color1),
           c2 = new Color(color2),
