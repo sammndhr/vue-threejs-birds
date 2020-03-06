@@ -129,7 +129,6 @@
     },
 
     mounted() {
-      console.log(this.color1, this.color2)
       this.worldWidth = window.innerWidth
       this.worldHeight = window.innerHeight
 
