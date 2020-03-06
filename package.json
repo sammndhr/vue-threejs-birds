@@ -1,7 +1,7 @@
 {
   "name": "vue-threejs-birds",
   "version": "0.6.3",
-  "description": "Threejs birds flocking animation refactored and converted to vue module",
+  "description": "Threejs birds flocking animation refactored and converted to vue module.",
   "author": {
     "name": "Mrinalini 'Sam' Manandhar",
     "email": "sam@mrinalini.dev"

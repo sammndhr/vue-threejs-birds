@@ -9,7 +9,7 @@ vue-threejs-birds is vue module for ["flocking birds animation" from threejs](ht
 Install
 
 ```
-npm install --save https://github.com/mrinalini-m/vue-threejs-birds
+npm install --save vue-threejs-birds
 ```
 
 Then import it into YourComponent.vue and use it like a normal vue component.
@@ -114,7 +114,7 @@ Canvas will default to 100% viewport width and 100% viewport height on mount and
 10. **`fixedHeight`**: Height will not change. If `minHeight > fixedHeight`, `fixedHeight` will set to `minHeight`
 11. **`fixedWidth`**: Width will not change. If `minWidth > fixedWidth`, `fixedWidth` will set to `minWidth`
 
-Here are all the props that can be passed with prop types.
+Here are all the props that can be passed with their respective prop types.
 
 ```vue
 <script>
