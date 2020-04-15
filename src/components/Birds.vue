@@ -32,8 +32,8 @@
     props: {
       canvasBgColor: [String, Number],
       canvasBgAlpha: { default: 1, type: Number, required: false },
-      color1: [String, Number],
-      color2: [String, Number],
+      color1: { default: 0x8bf329, type: [String, Number], required: false },
+      color2: { default: 0x298bf3, type: [String, Number], required: false },
       colorEffect: {
         default: 0,
         type: Number,
@@ -218,11 +218,9 @@
       },
 
       getNewColor(order) {
-        const color1 = this.color1 === undefined ? 0x8bf329 : this.color1,
-          color2 = this.color2 === undefined ? 0x298bf3 : this.color2,
-          colorMode = this.colorMode[this.colorEffect],
-          c1 = new Color(color1),
-          c2 = new Color(color2),
+        const colorMode = this.colorMode[this.colorEffect],
+          c1 = new Color(this.color1),
+          c2 = new Color(this.color2),
           gradient = colorMode.indexOf('Gradient') != -1
 
         let c, dist
@@ -242,7 +240,7 @@
           c = new Color(r2, g2, b2)
         } else if (colorMode.indexOf('mix') == 0) {
           // Naive color arithmetic
-          c = new Color(color1 + dist * color2)
+          c = new Color(this.color1 + dist * this.color2)
         } else {
           // Linear interpolation
           c = c1.lerp(c2, dist)
