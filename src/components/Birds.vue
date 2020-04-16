@@ -1,5 +1,5 @@
 <template>
-  <div ref="birdContainer" :style="dimensionsObj" class="container"></div>
+  <div ref="birdContainer" class="container" :style="containerSize"></div>
 </template>
 
 <script>
@@ -28,7 +28,6 @@
 
   export default {
     name: 'VueThreejsBirds',
-
     props: {
       canvasBgColor: {
         default: 0xffffff,
@@ -104,9 +103,6 @@
     data() {
       return {
         animationReq: null,
-        BIRDS: 32 * 32,
-        bgAlpha: 1,
-        bgColor: 0xffffff,
         BirdGeometry: Object.create(null),
         birdUniforms: null,
         BOUNDS: 800,
@@ -120,7 +116,6 @@
           4: 'mix'
         },
         container: null,
-        dimensionsObj: {},
         gpuCompute: null,
         last: window.performance.now(),
         mouseY: 0,
@@ -128,59 +123,53 @@
         positionVariable: {},
         positionUniforms: {},
         renderer: null,
-        scrollDirChanged: false,
-        currScrollDir: { up: false, down: false },
         scene: null,
-        WIDTH: 32,
-        worldWidth: 1440,
-        worldHeight: 900,
         velocityUniforms: {},
-        velocityVariable: {}
+        velocityVariable: {},
+        windowSize: { width: 1440, height: 900 }
       }
     },
 
     computed: {
-      windowHalfX: function() {
-        return this.worldWidth / 2
+      windowHalf: function() {
+        const { width, height } = this.worldSize
+        const x = width / 2,
+          y = height / 2
+        return { x, y }
       },
-      windowHalfY: function() {
-        return this.worldHeight / 2
+
+      WIDTH: function() {
+        // whole numbers only
+        return Math.pow(2, Math.floor(this.quantity))
+      },
+      BIRDS: function() {
+        return this.WIDTH * this.WIDTH
+      },
+      worldSize: function() {
+        let { width, height } = this.windowSize
+
+        width =
+          this.fixedWidth > 0 ? this.fixedWidth : Math.max(width, this.minWidth)
+
+        height =
+          this.fixedHeight > 0
+            ? this.fixedHeight
+            : Math.max(height, this.minHeight)
+        return { width, height }
+      },
+      containerSize: function() {
+        const dimensions = {}
+        if (this.minHeight > 0) {
+          dimensions.minHeight = this.minHeight + 'px'
+        }
+        if (this.minWidth > 0) {
+          dimensions.minWidth = this.minWidth + 'px'
+        }
+        return dimensions
       }
     },
 
     mounted() {
-      this.worldWidth = window.innerWidth
-      this.worldHeight = window.innerHeight
-
-      if (this.canvasBgAlpha || this.canvasBgAlpha === 0)
-        this.bgAlpha = Math.max(Math.min(this.canvasBgAlpha, 1), 0)
-      if (this.fixedHeight !== null) {
-        this.worldHeight = this.fixedHeight
-      }
-      if (this.fixedWidth !== null) {
-        this.worldWidth = this.fixedWidth
-      }
-
-      const dimensions = {}
-
-      if (this.minHeight) {
-        dimensions.minHeight = this.minHeight + 'px'
-      }
-      if (this.minWidth) {
-        dimensions.minWidth = this.minWidth + 'px'
-      }
-      this.dimensionsObj = dimensions
-      this.worldHeight = Math.max(this.minHeight, this.worldHeight)
-      this.worldWidth = Math.max(this.minWidth, this.worldWidth)
-
-      // black in binary is 0
-      if (this.canvasBgColor || this.canvasBgColor === 0)
-        this.bgColor = this.canvasBgColor
-      this.WIDTH = Math.pow(
-        2,
-        Math.max(Math.min(Math.abs(this.quantity), 5), 1)
-      ) //My computer can't handle too many birdiez :(
-      this.BIRDS = this.WIDTH * this.WIDTH
       this.BirdGeometry = this.createBirdGeometry()
       this.init()
       this.animate()
@@ -193,24 +182,19 @@
 
     methods: {
       init: function() {
+        const { width, height } = this.worldSize
         this.container = this.$refs.birdContainer
-        this.camera = new PerspectiveCamera(
-          75,
-          this.worldWidth / this.worldHeight,
-          1,
-          3000
-        )
+        this.camera = new PerspectiveCamera(75, width / height, 1, 3000)
         this.camera.position.z = 350
         this.scene = new Scene()
         this.scene.fog = new Fog(0xffffff, 100, 1000)
         this.renderer = new WebGLRenderer({
           alpha: true
         })
-
         this.renderer.setPixelRatio(window.devicePixelRatio)
-        this.renderer.setSize(this.worldWidth, this.worldHeight)
+        this.renderer.setSize(width, height)
         this.container.appendChild(this.renderer.domElement)
-        this.renderer.setClearColor(this.bgColor, this.bgAlpha)
+        this.renderer.setClearColor(this.canvasBgColor, this.canvasBgAlpha)
         this.initComputeRenderer()
 
         document.addEventListener('mousemove', this.onDocumentMouseMove, {
@@ -448,40 +432,42 @@
       },
 
       onWindowResize() {
-        const rerender = this.fixedHeight === null || this.fixedWidth === null
-        if (this.fixedHeight === null) {
-          this.worldHeight = Math.max(window.innerHeight, this.minHeight)
+        this.windowSize = {
+          width: window.innerWidth,
+          height: window.innerHeight
         }
-        if (this.fixedWidth === null) {
-          this.worldWidth = Math.max(window.innerWidth, this.minWidth)
-        }
+
+        const rerender = this.fixedHeight === null || this.fixedWidth === null,
+          { width, height } = this.worldSize
         if (rerender && this.renderer) {
-          this.camera.aspect = this.worldWidth / this.worldHeight
+          this.camera.aspect = width / height
           this.camera.updateProjectionMatrix()
-          this.renderer.setSize(this.worldWidth, this.worldHeight)
+          this.renderer.setSize(width, height)
         }
       },
 
       onDocumentMouseMove(event) {
-        this.mouseX = event.clientX - this.windowHalfX - 200
-        this.mouseY = event.clientY - this.windowHalfY - 100
+        this.mouseX = event.clientX - this.windowHalf.x - 200
+        this.mouseY = event.clientY - this.windowHalf.y - 100
       },
 
       onDocumentTouchStart(event) {
         if (event.touches.length === 1) {
           //won't work if passive is false
           // event.preventDefault()
-          this.mouseX = event.touches[0].pageX - this.windowHalfX
-          this.mouseY = event.touches[0].pageY - this.windowHalfY
+          this.mouseX = event.touches[0].pageX - this.windowHalf.x
+          this.mouseY = event.touches[0].pageY - this.windowHalf.y
         }
       },
+
       onDocumentTouchMove(event) {
         if (event.touches.length === 1) {
           // event.preventDefault()
-          this.mouseX = event.touches[0].pageX - this.windowHalfX
-          this.mouseY = event.touches[0].pageY - this.windowHalfY
+          this.mouseX = event.touches[0].pageX - this.windowHalf.x
+          this.mouseY = event.touches[0].pageY - this.windowHalf.y
         }
       },
+
       checkScrollDirectionIsUp(event) {
         if (event.wheelDelta) {
           return event.wheelDelta > 0
@@ -491,32 +477,17 @@
 
       //trying to make birds move with scroll
       onDocumentScroll(event) {
-        if (!this.currScrollDir.down && !this.currScrollDir.up) {
-          this.scrollDirChanged = true
-        }
+        let mouseY
+
         if (this.checkScrollDirectionIsUp(event)) {
-          if (this.currScrollDir.up && !this.currScrollDir.down) {
-            this.scrollDirChanged = false
-          }
-          if (!this.currScrollDir.up && this.currScrollDir.down) {
-            this.scrollDirChanged = true
-          }
-          this.currScrollDir.down = false
-          this.currScrollDir.up = true
-          this.mouseX = 0
-          this.mouseY = this.windowHalfY / 3
+          mouseY = this.windowHalf.y / 2
         } else {
-          if (this.currScrollDir.down && !this.currScrollDir.up) {
-            this.scrollDirChanged = false
-          }
-          if (!this.currScrollDir.down && this.currScrollDir.up) {
-            this.scrollDirChanged = true
-          }
-          this.currScrollDir.down = true
-          this.currScrollDir.up = false
-          this.mouseX = 0
-          this.mouseY = -this.windowHalfY / 3
+          mouseY = -this.windowHalf.y / 2
         }
+
+        // birds always move towards center x
+        this.mouseX = 0
+        this.mouseY = mouseY
       },
 
       animate() {
@@ -556,8 +527,8 @@
         this.birdUniforms['delta'].value = delta
 
         this.velocityUniforms['predator'].value.set(
-          (0.5 * this.mouseX) / this.windowHalfX,
-          (-0.5 * this.mouseY) / this.windowHalfY,
+          (0.5 * this.mouseX) / this.windowHalf.x,
+          (-0.5 * this.mouseY) / this.windowHalf.y,
           0
         )
 

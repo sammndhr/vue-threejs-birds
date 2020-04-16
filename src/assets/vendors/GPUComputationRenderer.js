@@ -1,5 +1,4 @@
 // Source: https://github.com/mrdoob/three.js/blob/master/examples/jsm/misc/GPUComputationRenderer.js
-
 /**
  * @author yomboprime https://github.com/yomboprime
  *
@@ -46,7 +45,7 @@
  * gpuCompute.setVariableDependencies( posVar, [ velVar, posVar ] );
  *
  * // Add custom uniforms
- * velVar.material.uniforms.time = { Camera, ClampToEdgeWrapping, DataTexture, FloatType, HalfFloatType, Mesh, NearestFilter, PlaneBufferGeometry, RGBAFormat, Scene, ShaderMaterial, WebGLRenderTarget };
+ * velVar.material.uniforms.time = { value: 0.0 };
  *
  * // Check for completeness
  * var error = gpuCompute.init();
