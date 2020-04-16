@@ -30,14 +30,30 @@
     name: 'VueThreejsBirds',
 
     props: {
-      canvasBgColor: [String, Number],
-      canvasBgAlpha: { default: 1, type: Number, required: false },
+      canvasBgColor: {
+        default: 0xffffff,
+        type: [String, Number],
+        required: false
+      },
+      canvasBgAlpha: {
+        default: 1,
+        type: Number,
+        required: false,
+        // range 0-1
+        validator: function(val) {
+          return val >= 0 && val <= 1
+        }
+      },
       color1: { default: 0x8bf329, type: [String, Number], required: false },
       color2: { default: 0x298bf3, type: [String, Number], required: false },
       colorEffect: {
         default: 0,
         type: Number,
-        required: false
+        required: false,
+        //range 0-4 integers only
+        validator: function(val) {
+          return [0, 1, 2, 3, 4].includes(val)
+        }
       },
       effectController: {
         default: () => ({
@@ -70,9 +86,13 @@
         required: false
       },
       quantity: {
-        default: 32,
+        default: 3,
         type: Number,
-        required: false
+        required: false,
+        // range 1-5
+        validator: function(val) {
+          return val >= 1 && val <= 5
+        }
       },
       wingsSpan: {
         type: Number,
