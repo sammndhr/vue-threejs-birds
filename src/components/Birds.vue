@@ -3,6 +3,7 @@
 </template>
 
 <script>
+  /* eslint-disable */
   import {
     PerspectiveCamera,
     Scene,
@@ -25,7 +26,7 @@
     birdFS
   } from '../utils/shaders.js'
 
-  import { validateColor, inRange, clamp } from '../utils/helpers.js'
+  import { flipCoin, validateColor, inRange, clamp } from '../utils/helpers.js'
 
   export default {
     name: 'VueThreejsBirds',
@@ -233,9 +234,14 @@
             g2 = clamp(c1.g + Math.random() * c2.g, 0, 1),
             b2 = clamp(c1.b + Math.random() * c2.b, 0, 1)
 
-          c = new Color(r2, g2, b2)
+          const r1 = clamp(c1.r * Math.random() + c2.r, 0, 1),
+            g1 = clamp(c1.g * Math.random() + c2.g, 0, 1),
+            b1 = clamp(c1.b * Math.random() + c2.b, 0, 1)
+
+          c = flipCoin() ? new Color(r2, g2, b2) : new Color(r1, g1, b1)
         } else if (colorMode.indexOf('mix') == 0) {
-          // Naive color arithmetic
+          //  Naive color arithmetic
+          //  0x00ffff and 0x00ced1 will give random colors
           c = new Color(c1.getHex() + dist * c2.getHex())
         } else {
           // Linear interpolation

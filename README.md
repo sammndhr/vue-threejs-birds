@@ -2,7 +2,9 @@
 
 vue-threejs-birds is vue module for ["flocking birds animation" from threejs](https://threejs.org/examples/webgl_gpgpu_birds.html). Props have been extracted to customize options.
 
-[**Codesandbox Demo**](https://codesandbox.io/s/vue-threejs-birds-wc2vc?file=/src/App.vue)
+[**Demo**](https://wc2vc.csb.app/)
+
+[codesandbox](https://codesandbox.io/s/vue-threejs-birds-wc2vc?file=/src/App.vue)
 
 ## Usage
 
@@ -95,7 +97,7 @@ colorEffectMap = {
 
 5. **`effectController`**: Bird movement options.
 
-```
+```js
 effectController: {
   separation: 20.0,
   alignment: 20.0,
@@ -201,3 +203,5 @@ Here are all the props that can be passed with their respective prop types.
 ```
 
 [Original source code](https://github.com/mrdoob/three.js/blob/master/examples/webgl_gpgpu_birds.html).
+
+[Other Reference](https://github.com/tengbao/vanta/).

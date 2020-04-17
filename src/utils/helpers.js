@@ -10,4 +10,8 @@ function inRange(val, min, max) {
   return val >= min && val <= max
 }
 
-export { clamp, validateColor, inRange }
+function flipCoin() {
+  return Math.floor(Math.random() * 2)
+}
+
+export { clamp, validateColor, inRange, flipCoin }
