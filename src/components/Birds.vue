@@ -137,6 +137,7 @@
         windowSize: { width: window.innerWidth, height: window.innerHeight }
       }
     },
+
     computed: {
       windowHalf: function() {
         const { width, height } = this.worldSize
@@ -144,7 +145,6 @@
           y = height / 2
         return { x, y }
       },
-
       WIDTH: function() {
         // whole numbers only
         return Math.pow(2, Math.floor(this.quantity))
