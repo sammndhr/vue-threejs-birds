@@ -24,7 +24,8 @@
     birdVS,
     birdFS
   } from '../utils/shaders.js'
-  import '../utils/helpers.js'
+
+  import { validateColor, inRange, clamp } from '../utils/helpers.js'
 
   export default {
     name: 'VueThreejsBirds',
@@ -32,7 +33,10 @@
       canvasBgColor: {
         default: 0xffffff,
         type: [String, Number],
-        required: false
+        required: false,
+        validator: function(val) {
+          return validateColor(new Color(val))
+        }
       },
       canvasBgAlpha: {
         default: 1,
@@ -40,11 +44,25 @@
         required: false,
         // range 0-1
         validator: function(val) {
-          return val >= 0 && val <= 1
+          return inRange(val, 0, 1)
         }
       },
-      color1: { default: 0x8bf329, type: [String, Number], required: false },
-      color2: { default: 0x298bf3, type: [String, Number], required: false },
+      color1: {
+        default: 0x8bf329,
+        type: [String, Number],
+        required: false,
+        validator: function(val) {
+          return validateColor(new Color(val))
+        }
+      },
+      color2: {
+        default: 0x298bf3,
+        type: [String, Number],
+        required: false,
+        validator: function(val) {
+          return validateColor(new Color(val))
+        }
+      },
       colorEffect: {
         default: 0,
         type: Number,
@@ -238,9 +256,9 @@
         }
 
         if (colorMode.indexOf('variance') == 0) {
-          const r2 = (c1.r + Math.random() * c2.r).clamp(0, 1),
-            g2 = (c1.g + Math.random() * c2.g).clamp(0, 1),
-            b2 = (c1.b + Math.random() * c2.b).clamp(0, 1)
+          const r2 = clamp(c1.r + Math.random() * c2.r, 0, 1),
+            g2 = clamp(c1.g + Math.random() * c2.g, 0, 1),
+            b2 = clamp(c1.b + Math.random() * c2.b, 0, 1)
           c = new Color(r2, g2, b2)
         } else if (colorMode.indexOf('mix') == 0) {
           // Naive color arithmetic
