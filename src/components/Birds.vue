@@ -1,5 +1,5 @@
 <template>
-  <div ref="birdContainer" class="container" :style="containerSize"></div>
+  <div ref="birdContainer" class="container"></div>
 </template>
 
 <script>
@@ -92,16 +92,6 @@
         default: null,
         required: false
       },
-      minHeight: {
-        type: Number,
-        default: null,
-        required: false
-      },
-      minWidth: {
-        type: Number,
-        default: null,
-        required: false
-      },
       quantity: {
         default: 3,
         type: Number,
@@ -144,7 +134,7 @@
         scene: null,
         velocityUniforms: {},
         velocityVariable: {},
-        windowSize: { width: 1440, height: 900 }
+        windowSize: { width: null, height: null }
       }
     },
 
@@ -165,25 +155,10 @@
       },
       worldSize: function() {
         let { width, height } = this.windowSize
+        width = this.fixedWidth > 0 ? this.fixedWidth : width
 
-        width =
-          this.fixedWidth > 0 ? this.fixedWidth : Math.max(width, this.minWidth)
-
-        height =
-          this.fixedHeight > 0
-            ? this.fixedHeight
-            : Math.max(height, this.minHeight)
+        height = this.fixedHeight > 0 ? this.fixedHeight : height
         return { width, height }
-      },
-      containerSize: function() {
-        const dimensions = {}
-        if (this.minHeight > 0) {
-          dimensions.minHeight = this.minHeight + 'px'
-        }
-        if (this.minWidth > 0) {
-          dimensions.minWidth = this.minWidth + 'px'
-        }
-        return dimensions
       }
     },
 
@@ -192,6 +167,12 @@
       this.init()
       this.animate()
       this.$root.$on('resized', this.onWindowResize)
+      const { width, height } = this.windowSize
+      // in case event isn't emitted
+      this.windowSize = {
+        width: !width && window.innerWidth,
+        height: !height && window.innerHeight
+      }
     },
 
     beforeDestroy() {
@@ -449,18 +430,17 @@
         }
       },
 
-      onWindowResize() {
+      onWindowResize(size) {
         this.windowSize = {
-          width: window.innerWidth,
-          height: window.innerHeight
+          width: (size && size.width) || window.innerWidth,
+          height: (size && size.height) || window.innerHeight
         }
+        const rerender = this.fixedHeight === null || this.fixedWidth === null
 
-        const rerender = this.fixedHeight === null || this.fixedWidth === null,
-          { width, height } = this.worldSize
         if (rerender && this.renderer) {
-          this.camera.aspect = width / height
+          this.camera.aspect = this.worldSize.width / this.worldSize.height
           this.camera.updateProjectionMatrix()
-          this.renderer.setSize(width, height)
+          this.renderer.setSize(this.worldSize.width, this.worldSize.height)
         }
       },
 
