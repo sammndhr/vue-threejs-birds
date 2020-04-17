@@ -134,10 +134,9 @@
         scene: null,
         velocityUniforms: {},
         velocityVariable: {},
-        windowSize: { width: null, height: null }
+        windowSize: { width: window.innerWidth, height: window.innerHeight }
       }
     },
-
     computed: {
       windowHalf: function() {
         const { width, height } = this.worldSize
@@ -155,9 +154,8 @@
       },
       worldSize: function() {
         let { width, height } = this.windowSize
-        width = this.fixedWidth > 0 ? this.fixedWidth : width
-
-        height = this.fixedHeight > 0 ? this.fixedHeight : height
+        width = this.fixedWidth !== null ? this.fixedWidth : width
+        height = this.fixedHeight !== null ? this.fixedHeight : height
         return { width, height }
       }
     },
@@ -167,12 +165,6 @@
       this.init()
       this.animate()
       this.$root.$on('resized', this.onWindowResize)
-      const { width, height } = this.windowSize
-      // in case event isn't emitted
-      this.windowSize = {
-        width: !width && window.innerWidth,
-        height: !height && window.innerHeight
-      }
     },
 
     beforeDestroy() {
@@ -240,10 +232,11 @@
           const r2 = clamp(c1.r + Math.random() * c2.r, 0, 1),
             g2 = clamp(c1.g + Math.random() * c2.g, 0, 1),
             b2 = clamp(c1.b + Math.random() * c2.b, 0, 1)
+
           c = new Color(r2, g2, b2)
         } else if (colorMode.indexOf('mix') == 0) {
           // Naive color arithmetic
-          c = new Color(this.color1 + dist * this.color2)
+          c = new Color(c1.getHex() + dist * c2.getHex())
         } else {
           // Linear interpolation
           c = c1.lerp(c2, dist)
